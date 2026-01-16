@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle, Filter, Search } from 'lucide-react';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import {
   ResponsiveContainer,
   BarChart,
@@ -59,6 +60,7 @@ function formatCr(v: number) {
 }
 
 export function CategoryRadar() {
+  const isMobile = useIsMobile();
   const [state, setState] = useState<string>('All');
   const [months, setMonths] = useState<number>(12);
   const [q, setQ] = useState('');
@@ -127,7 +129,7 @@ export function CategoryRadar() {
         </p>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-6">
+      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur p-4 rounded-lg shadow-sm border border-gray-100 mb-6">
         <div className="flex flex-col lg:flex-row lg:items-end gap-4">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-gray-500" />
@@ -221,12 +223,18 @@ export function CategoryRadar() {
 
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Big categories vs transparency</h2>
-            <div className="h-72">
+            <div className="h-64 sm:h-72">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={shareVsTransparency} layout="vertical" margin={{ left: 50 }}>
+                <BarChart data={shareVsTransparency} layout="vertical" margin={{ left: isMobile ? 16 : 50 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" tickFormatter={(v) => `${Number(v).toFixed(0)}%`} />
-                  <YAxis type="category" dataKey="activity" width={180} tick={{ fontSize: 11 }} />
+                  <YAxis
+                    type="category"
+                    dataKey="activity"
+                    width={isMobile ? 140 : 180}
+                    tick={{ fontSize: isMobile ? 10 : 11 }}
+                    tickFormatter={(v) => (isMobile ? String(v).slice(0, 18) : String(v))}
+                  />
                   <Tooltip
                     formatter={(v: any, name: any) => {
                       if (name === 'share_pct') return [`${Number(v).toFixed(1)}%`, 'Spend share'];

@@ -53,11 +53,11 @@ function Dashboard() {
   if (error) return <div className="p-10 text-red-500">Error connecting to API: {error.message}</div>
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
       {/* Hero / Welcome Section */}
       <div className="bg-gradient-to-r from-blue-900 to-indigo-800 rounded-2xl p-8 mb-8 text-white shadow-xl">
         <div className="max-w-3xl">
-          <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
             Empowering Citizens through Data Transparency
           </h1>
           <p className="text-lg text-blue-100 mb-6 leading-relaxed">
@@ -66,14 +66,14 @@ function Dashboard() {
             We transform messy public records into clear insights, helping you track how public money 
             is spent on local development.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/mps" className="bg-white text-blue-900 px-6 py-2 rounded-full font-bold hover:bg-blue-50 transition-colors">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+            <Link to="/mps" className="w-full sm:w-auto text-center bg-white text-blue-900 px-6 py-2 rounded-full font-bold hover:bg-blue-50 transition-colors">
               Explore Rankings
             </Link>
-            <Link to="/analytics" className="bg-blue-700 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-600 transition-colors border border-blue-500">
+            <Link to="/analytics" className="w-full sm:w-auto text-center bg-blue-700 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-600 transition-colors border border-blue-500">
               View Trends
             </Link>
-            <Link to="/category-radar" className="bg-indigo-600 text-white px-6 py-2 rounded-full font-bold hover:bg-indigo-500 transition-colors border border-indigo-500">
+            <Link to="/category-radar" className="w-full sm:w-auto text-center bg-indigo-600 text-white px-6 py-2 rounded-full font-bold hover:bg-indigo-500 transition-colors border border-indigo-500">
               Category Radar
             </Link>
           </div>
@@ -272,9 +272,9 @@ function Dashboard() {
 
 function StatCard({ title, value }: { title: string, value: string }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100">
       <p className="text-sm text-gray-500 font-medium">{title}</p>
-      <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+      <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">{value}</p>
     </div>
   )
 }

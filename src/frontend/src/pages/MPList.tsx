@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowUpDown, AlertCircle, ArrowUp, ArrowDown, Filter, Search } from 'lucide-react';
 import { useState, useMemo } from 'react';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import {
   ResponsiveContainer,
   BarChart,
@@ -54,6 +55,7 @@ function renderTopSpenderMetricsLabel(item: any) {
 }
 
 export function MPList() {
+  const isMobile = useIsMobile();
   const [searchParams] = useSearchParams();
 
   const { isPending, error, data } = useQuery({
@@ -208,7 +210,7 @@ export function MPList() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+      <div className="sticky top-0 z-20 bg-gray-50/95 backdrop-blur -mx-4 px-4 py-3 sm:static sm:bg-transparent sm:backdrop-blur-0 sm:mx-0 sm:px-0 sm:py-0 border-b border-gray-100 sm:border-0 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="text-2xl font-bold text-gray-900">Member of Parliament Performance</h1>
         
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -284,13 +286,19 @@ export function MPList() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
               <div className="text-sm font-semibold text-gray-900 mb-3">Top 5 spenders (current selection)</div>
-              <div className="text-xs text-gray-500 mb-2">Spend bar + Transparency (T) and Completion (C) shown on-chart.</div>
+              <div className="text-xs text-gray-500 mb-2">{isMobile ? 'Tap a bar to see Transparency (T) and Completion (C).' : 'Spend bar + Transparency (T) and Completion (C) shown on-chart.'}</div>
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={highlights.topSpenders} layout="vertical" margin={{ left: 40, right: 90 }}>
+                  <BarChart data={highlights.topSpenders} layout="vertical" margin={{ left: isMobile ? 16 : 40, right: isMobile ? 16 : 90 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" tickFormatter={(v) => `₹${(Number(v) / 1e7).toFixed(1)}Cr`} />
-                    <YAxis type="category" dataKey="name" width={160} tick={{ fontSize: 12 }} />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      width={isMobile ? 120 : 160}
+                      tick={{ fontSize: isMobile ? 10 : 12 }}
+                      tickFormatter={(v) => (isMobile ? String(v).slice(0, 16) : String(v))}
+                    />
                     <Tooltip
                       formatter={(v: any, name: any) => {
                         if (name === 'spent') return [formatCr(Number(v)), 'Spent'];
@@ -300,19 +308,21 @@ export function MPList() {
                       }}
                     />
                     <Bar dataKey="spent" fill="#2563eb">
-                      <LabelList
-                        position="right"
-                        content={(p: any) => {
-                          const item = highlights.topSpenders[p.index];
-                          const tx = Number(p.x) + Number(p.width) + 10;
-                          const ty = Number(p.y) + Number(p.height) / 2;
-                          return (
-                            <text x={tx} y={ty} dy={4} fontSize={11} fill="#374151">
-                              {renderTopSpenderMetricsLabel(item)}
-                            </text>
-                          );
-                        }}
-                      />
+                      {!isMobile ? (
+                        <LabelList
+                          position="right"
+                          content={(p: any) => {
+                            const item = highlights.topSpenders[p.index];
+                            const tx = Number(p.x) + Number(p.width) + 10;
+                            const ty = Number(p.y) + Number(p.height) / 2;
+                            return (
+                              <text x={tx} y={ty} dy={4} fontSize={11} fill="#374151">
+                                {renderTopSpenderMetricsLabel(item)}
+                              </text>
+                            );
+                          }}
+                        />
+                      ) : null}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -438,22 +448,22 @@ export function MPList() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th scope="col" className="min-w-[250px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('name')}>
+              <th scope="col" className="min-w-[250px] px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('name')}>
                 <div className="flex items-center">MP Name / Constituency <SortIcon columnKey="name"/></div>
               </th>
-              <th scope="col" className="min-w-[150px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('state')}>
+              <th scope="col" className="min-w-[150px] px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('state')}>
                 <div className="flex items-center">State <SortIcon columnKey="state"/></div>
               </th>
-              <th scope="col" className="min-w-[120px] px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('spent')}>
+              <th scope="col" className="min-w-[120px] px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('spent')}>
                 <div className="flex justify-end items-center">Spent (₹) <SortIcon columnKey="spent"/></div>
               </th>
-              <th scope="col" className="min-w-[120px] px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('utilization_rate')}>
+              <th scope="col" className="min-w-[120px] px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('utilization_rate')}>
                 <div className="flex justify-end items-center">Utilized % <SortIcon columnKey="utilization_rate"/></div>
               </th>
-              <th scope="col" className="min-w-[120px] px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('completion_rate')}>
+              <th scope="col" className="min-w-[120px] px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('completion_rate')}>
                 <div className="flex justify-end items-center">Comp. % <SortIcon columnKey="completion_rate"/></div>
               </th>
-              <th scope="col" className="min-w-[100px] px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('transparency_score')}>
+              <th scope="col" className="min-w-[100px] px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => requestSort('transparency_score')}>
                  <div className="flex justify-center items-center">Trans. <SortIcon columnKey="transparency_score"/></div>
               </th>
             </tr>
@@ -461,19 +471,19 @@ export function MPList() {
           <tbody className="bg-white divide-y divide-gray-200">
             {sortedData.map((mp: any) => (
               <tr key={mp.name + mp.constituency} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4">
+                <td className="px-4 sm:px-6 py-4">
                   <div className="text-sm font-medium text-blue-600 hover:underline">
                     <Link to={`/mps/${encodeURIComponent(mp.name)}`}>{mp.name}</Link>
                   </div>
                   <div className="text-xs text-gray-500">{mp.constituency}</div>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-4 sm:px-6 py-4">
                   <span className="text-xs text-gray-800">{mp.state}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900 font-mono">
+                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900 font-mono">
                   ₹{(mp.spent / 10000000).toFixed(2)} Cr
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
                   <div className="flex items-center justify-end">
                     <div className="w-16 bg-gray-200 rounded-full h-1.5 mr-2">
                       <div className={`h-1.5 rounded-full ${mp.utilization_rate > 70 ? 'bg-green-600' : 'bg-yellow-400'}`} style={{ width: `${Math.min(mp.utilization_rate, 100)}%` }}></div>
@@ -481,10 +491,10 @@ export function MPList() {
                     <span>{mp.utilization_rate}%</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
                   {mp.completion_rate}%
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
+                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-center text-sm">
                    {mp.transparency_score < 20 ? (
                        <span className="text-red-500 flex justify-center items-center font-bold">
                            <AlertCircle className="w-3 h-3 mr-1" /> {mp.transparency_score}%

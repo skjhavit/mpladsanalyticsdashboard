@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import { Calendar, MapPin, User, AlertCircle } from 'lucide-react';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import {
   ResponsiveContainer,
   LineChart,
@@ -39,6 +40,8 @@ export function VendorDetail() {
   const { name } = useParams();
   // Decode the vendor name component of the URL
   const decodedName = decodeURIComponent(name || '');
+
+  const isMobile = useIsMobile();
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
@@ -80,12 +83,12 @@ export function VendorDetail() {
               <AlertCircle className="w-4 h-4 mr-2" /> No time series available.
             </div>
           ) : (
-            <div className="h-72">
+            <div className="h-64 sm:h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={vendorInsightsQuery.data.monthly_received}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₹${(Number(v) / 1e7).toFixed(1)}Cr`} />
+                  <XAxis dataKey="month" tick={{ fontSize: isMobile ? 10 : 12 }} minTickGap={isMobile ? 20 : 10} />
+                  <YAxis tick={{ fontSize: isMobile ? 10 : 12 }} tickFormatter={(v) => `₹${(Number(v) / 1e7).toFixed(1)}Cr`} />
                   <Tooltip formatter={(v: any) => `₹${(Number(v) / 1e7).toFixed(2)} Cr`} />
                   <Line type="monotone" dataKey="amount" stroke="#2563eb" strokeWidth={2} dot={false} />
                 </LineChart>
@@ -135,12 +138,18 @@ export function VendorDetail() {
             <div className="text-gray-600 text-sm">No work-type breakdown available.</div>
           ) : (
             <div>
-              <div className="h-72">
+              <div className="h-64 sm:h-72">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={vendorInsightsQuery.data.top_work_types} layout="vertical" margin={{ left: 40 }}>
+                  <BarChart data={vendorInsightsQuery.data.top_work_types} layout="vertical" margin={{ left: isMobile ? 16 : 40 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" tickFormatter={(v) => `₹${(Number(v) / 1e7).toFixed(1)}Cr`} />
-                    <YAxis type="category" dataKey="activity" width={180} tick={{ fontSize: 12 }} />
+                    <YAxis
+                      type="category"
+                      dataKey="activity"
+                      width={isMobile ? 140 : 180}
+                      tick={{ fontSize: isMobile ? 10 : 12 }}
+                      tickFormatter={(v) => (isMobile ? String(v).slice(0, 18) : String(v))}
+                    />
                     <Tooltip formatter={(v: any) => `₹${(Number(v) / 1e7).toFixed(2)} Cr`} />
                     <Bar dataKey="amount" fill="#2563eb" />
                   </BarChart>

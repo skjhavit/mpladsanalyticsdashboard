@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Building2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import {
   ResponsiveContainer,
   BarChart,
@@ -19,6 +20,7 @@ function formatCr(v: number) {
 }
 
 export function VendorList() {
+  const isMobile = useIsMobile();
   const [selectedState, setSelectedState] = useState<string>('All');
 
   const { data: statesData } = useQuery({
@@ -97,7 +99,7 @@ export function VendorList() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
+      <div className="sticky top-0 z-20 bg-gray-50/95 backdrop-blur -mx-4 px-4 py-3 md:static md:bg-transparent md:backdrop-blur-0 md:mx-0 md:px-0 md:py-0 border-b border-gray-100 md:border-0 flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Top Vendors by Funds Received</h1>
         <div className="flex items-center gap-2">
           <label className="text-sm text-gray-600">State</label>
@@ -148,12 +150,18 @@ export function VendorList() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
               <div className="text-sm font-semibold text-gray-900 mb-3">Top vendors (amount received)</div>
-              <div className="h-64">
+              <div className="h-56 sm:h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={insights.top10} layout="vertical" margin={{ left: 40 }}>
+                  <BarChart data={insights.top10} layout="vertical" margin={{ left: isMobile ? 16 : 40 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" tickFormatter={(v) => `${(Number(v) / 1e7).toFixed(1)}Cr`} />
-                    <YAxis type="category" dataKey="name" width={220} tick={{ fontSize: 11 }} />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      width={isMobile ? 140 : 220}
+                      tick={{ fontSize: isMobile ? 10 : 11 }}
+                      tickFormatter={(v) => (isMobile ? String(v).slice(0, 18) : String(v))}
+                    />
                     <Tooltip
                       formatter={(v: any) => formatCr(Number(v))}
                       labelFormatter={(label: any) => String(label)}
@@ -185,7 +193,7 @@ export function VendorList() {
 
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
             <div className="text-sm font-semibold text-gray-900 mb-3">Correlation: Vendor amount vs MP spread</div>
-            <div className="h-72">
+            <div className="h-64 sm:h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -228,7 +236,7 @@ export function VendorList() {
                     </dt>
                     <dd>
                       <div className="text-lg font-medium text-gray-900">
-                        ₹{(vendor.total_received / 10000000).toFixed(4)} Cr
+                        ₹{(vendor.total_received / 10000000).toFixed(isMobile ? 2 : 4)} Cr
                       </div>
                     </dd>
                   </div>

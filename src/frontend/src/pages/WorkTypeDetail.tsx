@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import {
   LineChart,
   Line,
@@ -24,6 +25,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 export function WorkTypeDetail() {
   const params = useParams();
   const activity = params.activity ? decodeURIComponent(params.activity) : '';
+  const isMobile = useIsMobile();
 
   const { isPending, error, data } = useQuery({
     queryKey: ['workTypeInsights', activity],
@@ -54,13 +56,13 @@ export function WorkTypeDetail() {
               <AlertCircle className="w-4 h-4 mr-2" /> No time series available.
             </div>
           ) : (
-            <div className="h-72">
+            <div className="h-64 sm:h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data.monthly_spent}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                  <XAxis dataKey="month" tick={{ fontSize: isMobile ? 10 : 12 }} minTickGap={isMobile ? 20 : 10} />
                   <YAxis
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: isMobile ? 10 : 12 }}
                     tickFormatter={(v) => `₹${(Number(v) / 1e7).toFixed(1)}Cr`}
                   />
                   <Tooltip

@@ -76,9 +76,9 @@ export function Analytics() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+      <div className="sticky top-0 z-20 bg-gray-50/95 backdrop-blur -mx-4 px-4 py-3 md:static md:bg-transparent md:backdrop-blur-0 md:mx-0 md:px-0 md:py-0 border-b border-gray-100 md:border-0 flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Deep Insights & Trends</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Deep Insights & Trends</h1>
           <div className="text-sm text-gray-600 mt-1">Scope: <span className="font-semibold text-gray-900">{scopeLabel}</span></div>
         </div>
 
@@ -133,7 +133,7 @@ export function Analytics() {
       {/* Section 2: Monthly Trends */}
       <div className="bg-white p-6 shadow rounded-lg mb-12">
         <h2 className="text-xl font-semibold mb-4">Pace of Development ({scopeLabel}, Last 12 Months)</h2>
-        <div className="h-[400px]">
+        <div className="h-72 sm:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={trends}>
               <CartesianGrid strokeDasharray="3 3" />
