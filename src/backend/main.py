@@ -189,7 +189,7 @@ def _is_admin_request(request: Request) -> bool:
     token = os.getenv("GOVWORK_ADMIN_TOKEN") or "Token221988"
     logger.info(
         "Admin Token source: %s",
-        "env" if os.getenv("GOVWORK_ADMIN_TOKEN") else "default",
+        "env" if os.getenv("GOVWORK_ADMIN_TOKEN") else "static default",
     )
     presented = request.headers.get("x-admin-token")
     return presented == token
