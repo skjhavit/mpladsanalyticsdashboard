@@ -7,6 +7,7 @@ import { VendorList } from './pages/VendorList';
 import { VendorDetail } from './pages/VendorDetail';
 import { Analytics } from './pages/Analytics';
 import { Info, CheckCircle, Eye, Wallet, Search, ShieldCheck, TrendingUp, Building2, HelpCircle } from 'lucide-react';
+import { SuggestionsBox } from './components/SuggestionsBox';
 
 const queryClient = new QueryClient()
 
@@ -200,6 +201,10 @@ function Dashboard() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mb-12">
+        <SuggestionsBox apiBaseUrl={API_BASE_URL} />
       </div>
     </div>
   )

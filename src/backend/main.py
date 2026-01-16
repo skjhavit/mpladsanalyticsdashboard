@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Response
+from fastapi import FastAPI, Depends, HTTPException, Response, Request
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
@@ -10,6 +10,11 @@ import requests
 import logging
 import os
 import time
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from uuid import uuid4
+from pydantic import BaseModel, Field
 
 app = FastAPI(title="GovWork API", description="MPLADS Data Analysis API")
 
@@ -31,7 +36,16 @@ app.add_middleware(
 
 
 def _get_client_ip(request) -> str:
-    # Prefer proxy headers when behind Render/Cloudflare/etc.
+    # Prefer CDN/proxy headers when behind Cloudflare/Render/etc.
+    # Cloudflare: CF-Connecting-IP is the original client IP.
+    cf_connecting_ip = request.headers.get("cf-connecting-ip")
+    if cf_connecting_ip:
+        return cf_connecting_ip.strip()
+    # Some setups use True-Client-IP.
+    true_client_ip = request.headers.get("true-client-ip")
+    if true_client_ip:
+        return true_client_ip.strip()
+
     xff = request.headers.get("x-forwarded-for")
     if xff:
         # Can be a comma-separated chain. The left-most is the original client.
@@ -42,6 +56,55 @@ def _get_client_ip(request) -> str:
     if request.client and request.client.host:
         return request.client.host
     return "unknown"
+
+
+def _get_country_hint(request: Request) -> Optional[str]:
+    # Best-effort country based on common reverse-proxy/CDN headers.
+    for header in (
+        "cf-ipcountry",
+        "cloudfront-viewer-country",
+        "x-vercel-ip-country",
+        "x-country-code",
+        "x-geo-country",
+    ):
+        val = request.headers.get(header)
+        if val:
+            val = val.strip()
+            if val and val.upper() != "XX":
+                return val
+    return None
+
+
+def _suggestions_path() -> Path:
+    # Default under backend runtime data folder; can override via env.
+    configured = os.getenv("GOVWORK_SUGGESTIONS_PATH")
+    if configured:
+        return Path(configured).expanduser().resolve()
+    return Path(__file__).resolve().parent / "data" / "suggestions.jsonl"
+
+
+def _append_jsonl(path: Path, record: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+
+def _read_jsonl(path: Path, limit: int) -> list[dict]:
+    if not path.exists():
+        return []
+    items: list[dict] = []
+    with path.open("r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                items.append(json.loads(line))
+            except Exception:
+                continue
+    # Return newest first
+    items.reverse()
+    return items[:limit]
 
 
 @app.middleware("http")
@@ -81,6 +144,60 @@ async def log_requests(request, call_next):
         referer,
     )
     return response
+
+
+class SuggestionIn(BaseModel):
+    message: str = Field(..., min_length=3, max_length=2000)
+    page: Optional[str] = Field(default=None, max_length=200)
+    feature: Optional[str] = Field(default=None, max_length=200)
+
+
+@app.post("/api/suggestions")
+def create_suggestion(payload: SuggestionIn, request: Request):
+    # Persist as JSONL for append-only writes.
+    now = datetime.now(timezone.utc).isoformat()
+    record = {
+        "id": str(uuid4()),
+        "created_at": now,
+        "message": payload.message.strip(),
+        "page": payload.page,
+        "feature": payload.feature,
+        "meta": {
+            "ip": _get_client_ip(request),
+            "country": _get_country_hint(request),
+            "user_agent": request.headers.get("user-agent"),
+            "accept_language": request.headers.get("accept-language"),
+            "referer": request.headers.get("referer"),
+        },
+    }
+    _append_jsonl(_suggestions_path(), record)
+    logger.info(
+        "suggestion_created id=%s ip=%s country=%s",
+        record["id"],
+        record["meta"]["ip"],
+        record["meta"]["country"],
+    )
+    return {"ok": True, "id": record["id"]}
+
+
+def _is_admin_request(request: Request) -> bool:
+    token = os.getenv("GOVWORK_ADMIN_TOKEN")
+    presented = request.headers.get("x-admin-token")
+    if token:
+        return presented == token
+    # If no token configured, allow only localhost for safety.
+    ip = _get_client_ip(request)
+    return ip in {"127.0.0.1", "::1"}
+
+
+@app.get("/api/admin/suggestions")
+def list_suggestions(request: Request, limit: int = 200):
+    if not _is_admin_request(request):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    safe_limit = max(1, min(limit, 1000))
+    items = _read_jsonl(_suggestions_path(), safe_limit)
+    return {"count": len(items), "items": items}
 
 @app.get("/")
 def read_root():
