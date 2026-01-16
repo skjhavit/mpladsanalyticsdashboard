@@ -6,7 +6,7 @@ import { useState, useMemo } from 'react';
 export function MPList() {
   const { isPending, error, data } = useQuery({
     queryKey: ['mps'],
-    queryFn: () => fetch(import.meta.env.VITE_API_URL || '' + '/api/mps?limit=1000').then((res) => res.json()),
+    queryFn: () => fetch((import.meta.env.VITE_API_URL || '') + '/api/mps?limit=1000').then((res) => res.json()),
   });
 
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);

@@ -9,7 +9,7 @@ export function VendorDetail() {
 
   const { isPending, error, data } = useQuery({
     queryKey: ['vendor', decodedName],
-    queryFn: () => fetch(`/api/vendors/${encodeURIComponent(decodedName)}`).then((res) => res.json()),
+    queryFn: () => fetch((import.meta.env.VITE_API_URL || '') + `/api/vendors/${encodeURIComponent(decodedName)}`).then((res) => res.json()),
   });
 
   if (isPending) return <div className="p-10 text-center">Loading Vendor Details...</div>;

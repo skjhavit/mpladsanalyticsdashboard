@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 export function VendorList() {
   const { isPending, error, data } = useQuery({
     queryKey: ['vendors'],
-    queryFn: () => fetch(import.meta.env.VITE_API_URL || '' + '/api/vendors?limit=100').then((res) => res.json()),
+    queryFn: () => fetch((import.meta.env.VITE_API_URL || '') + '/api/vendors?limit=100').then((res) => res.json()),
   });
 
   if (isPending) return <div className="p-10 text-center">Loading Vendors...</div>;

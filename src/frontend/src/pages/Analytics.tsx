@@ -5,9 +5,9 @@ import {
 } from 'recharts';
 
 export function Analytics() {
-  const { data: topBottom } = useQuery({ queryKey: ['analytics-top'], queryFn: () => fetch(import.meta.env.VITE_API_URL || '' + '/api/analytics/top-bottom').then(r => r.json()) });
-  const { data: states } = useQuery({ queryKey: ['analytics-states'], queryFn: () => fetch(import.meta.env.VITE_API_URL || '' + '/api/analytics/states').then(r => r.json()) });
-  const { data: trends } = useQuery({ queryKey: ['analytics-trends'], queryFn: () => fetch(import.meta.env.VITE_API_URL || '' + '/api/analytics/trends').then(r => r.json()) });
+  const { data: topBottom } = useQuery({ queryKey: ['analytics-top'], queryFn: () => fetch((import.meta.env.VITE_API_URL || '') + '/api/analytics/top-bottom').then(r => r.json()) });
+  const { data: states } = useQuery({ queryKey: ['analytics-states'], queryFn: () => fetch((import.meta.env.VITE_API_URL || '') + '/api/analytics/states').then(r => r.json()) });
+  const { data: trends } = useQuery({ queryKey: ['analytics-trends'], queryFn: () => fetch((import.meta.env.VITE_API_URL || '') + '/api/analytics/trends').then(r => r.json()) });
 
   if (!topBottom || !states || !trends) return <div className="p-10 text-center">Loading Analytics...</div>;
 

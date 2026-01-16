@@ -6,7 +6,7 @@ export function MPDetail() {
   const { name } = useParams();
   const { isPending, error, data } = useQuery({
     queryKey: ['mp', name],
-    queryFn: () => fetch(`/api/mps/${encodeURIComponent(name || '')}`).then((res) => res.json()),
+    queryFn: () => fetch((import.meta.env.VITE_API_URL || '') + `/api/mps/${encodeURIComponent(name || '')}`).then((res) => res.json()),
   });
 
   if (isPending) return <div className="p-10 text-center">Loading MP Details...</div>;
