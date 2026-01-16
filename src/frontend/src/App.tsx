@@ -62,8 +62,8 @@ function Dashboard() {
 
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4">Key Performance Indicators</h2>
-        <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-blue-50 rounded-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
                 <p className="text-sm text-blue-600 font-medium">Fund Utilization</p>
                 <p className="text-3xl font-bold text-blue-900">{data.utilization_percentage.toFixed(1)}%</p>
                 <p className="text-xs text-blue-500 mt-1">of allocated funds have been spent</p>
