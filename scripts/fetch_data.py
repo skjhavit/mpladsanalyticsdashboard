@@ -2,10 +2,10 @@ import requests
 import json
 import os
 import time
+import argparse
 
 # Configuration
-DATA_DIR = "data/raw"
-os.makedirs(DATA_DIR, exist_ok=True)
+DEFAULT_DATA_DIR = "data/raw"
 
 # Common headers from the user's curl commands
 HEADERS = {
@@ -54,12 +54,13 @@ ENDPOINTS = [
     }
 ]
 
-def fetch_data():
+def fetch_data(data_dir: str = DEFAULT_DATA_DIR, force: bool = False):
+    os.makedirs(data_dir, exist_ok=True)
     for endpoint in ENDPOINTS:
-        filename = f"{DATA_DIR}/{endpoint['name']}.json"
+        filename = f"{data_dir}/{endpoint['name']}.json"
         
-        if os.path.exists(filename):
-            print(f"Skipping {endpoint['name']}, file already exists.")
+        if (not force) and os.path.exists(filename):
+            print(f"Skipping {endpoint['name']}, file already exists. Use --force to re-fetch.")
             continue
 
         print(f"Fetching {endpoint['name']}...")
@@ -85,4 +86,8 @@ def fetch_data():
             print(f"Error fetching {endpoint['name']}: {e}")
 
 if __name__ == "__main__":
-    fetch_data()
+    parser = argparse.ArgumentParser(description="Fetch raw MPLADS JSON tiles into data/raw.")
+    parser.add_argument("--data-dir", default=DEFAULT_DATA_DIR, help="Output directory for raw JSON files")
+    parser.add_argument("--force", action="store_true", help="Overwrite existing raw JSON files")
+    args = parser.parse_args()
+    fetch_data(data_dir=args.data_dir, force=args.force)

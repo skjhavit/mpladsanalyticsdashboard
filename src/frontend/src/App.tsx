@@ -6,6 +6,8 @@ import { MPDetail } from './pages/MPDetail';
 import { VendorList } from './pages/VendorList';
 import { VendorDetail } from './pages/VendorDetail';
 import { Analytics } from './pages/Analytics';
+import { WorkTypeDetail } from './pages/WorkTypeDetail';
+import { CategoryRadar } from './pages/CategoryRadar';
 import { Info, CheckCircle, Eye, Wallet, Search, ShieldCheck, TrendingUp, Building2, HelpCircle } from 'lucide-react';
 import { SuggestionsBox } from './components/SuggestionsBox';
 
@@ -27,7 +29,9 @@ function App() {
             <Route path="/mps/:name" element={<MPDetail />} />
             <Route path="/vendors" element={<VendorList />} />
             <Route path="/vendors/:name" element={<VendorDetail />} />
+            <Route path="/work-types/:activity" element={<WorkTypeDetail />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/category-radar" element={<CategoryRadar />} />
           </Routes>
         </div>
       </Router>
@@ -69,8 +73,31 @@ function Dashboard() {
             <Link to="/analytics" className="bg-blue-700 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-600 transition-colors border border-blue-500">
               View Trends
             </Link>
+            <Link to="/category-radar" className="bg-indigo-600 text-white px-6 py-2 rounded-full font-bold hover:bg-indigo-500 transition-colors border border-indigo-500">
+              Category Radar
+            </Link>
           </div>
         </div>
+      </div>
+
+      {/* What's new */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">What’s new</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Link to="/category-radar" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-sm font-bold text-gray-900">Category Radar</div>
+            <div className="text-sm text-gray-600 mt-1">Find state-specific category anomalies (lift, vendor concentration, transparency).</div>
+          </Link>
+          <Link to="/mps" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-sm font-bold text-gray-900">MP Insights + Correlations</div>
+            <div className="text-sm text-gray-600 mt-1">Top spenders show completion/transparency, plus correlation plots by selection.</div>
+          </Link>
+          <Link to="/vendors" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-sm font-bold text-gray-900">Vendor Tracking</div>
+            <div className="text-sm text-gray-600 mt-1">See which vendors receive the most funds and how concentrated the payouts are.</div>
+          </Link>
+        </div>
+        <div className="text-xs text-gray-500 mt-3">Tip: Use the global search in the navbar to jump to MPs/vendors/work types instantly.</div>
       </div>
 
       {/* Platform Guide */}
@@ -205,6 +232,39 @@ function Dashboard() {
 
       <div className="mb-12">
         <SuggestionsBox apiBaseUrl={API_BASE_URL} />
+      </div>
+
+      {/* Contact */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-xl font-semibold mb-2 text-gray-900">Contact</h2>
+
+        <div className="mb-4 rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-4">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-white border border-blue-100">
+              <ShieldCheck className="h-5 w-5 text-blue-700" />
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-gray-900">Transparency & good‑faith use</div>
+              <p className="mt-1 text-sm text-gray-700 leading-relaxed">
+                GovWork is an independent transparency initiative. It analyzes publicly available MPLADS records to help citizens seek clarity, verify facts, and understand how funds are allocated and spent. This website is <span className="font-semibold">not</span> intended to defame, target, or harass any individual, representative, department, or vendor.
+              </p>
+              <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                Public datasets can contain errors, omissions, or inconsistencies, and our processing may also introduce mistakes. Any inaccuracy is unintentional. If you notice a discrepancy, please share details at the email below — we’ll review it in good faith and correct it where appropriate.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-sm text-gray-600">
+          If you have feedback, data issues to report, or want to collaborate, reach out at{' '}
+          <a
+            href="mailto:sudhanshu.jha@icloud.com"
+            className="text-blue-600 hover:underline font-medium"
+          >
+            sudhanshu.jha@icloud.com
+          </a>
+          .
+        </p>
       </div>
     </div>
   )
