@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutDashboard, Users, Store, Search, BarChart3, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, Store, BarChart3, Menu, X } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
