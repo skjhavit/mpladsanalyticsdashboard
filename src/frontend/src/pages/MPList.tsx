@@ -20,18 +20,19 @@ export function MPList() {
   }, [data]);
 
   const filteredData = useMemo(() => {
-    if (!data) return [];
+    if (!data || !Array.isArray(data)) return [];
     const query = searchQuery.toLowerCase();
     return data.filter((mp: any) => {
       const matchesState = selectedState === 'All' || mp.state === selectedState;
-      const name = mp.name ? mp.name.toLowerCase() : '';
-      const constituency = mp.constituency ? mp.constituency.toLowerCase() : '';
+      const name = mp.name ? String(mp.name).toLowerCase() : '';
+      const constituency = mp.constituency ? String(mp.constituency).toLowerCase() : '';
       const matchesSearch = name.includes(query) || constituency.includes(query);
       return matchesState && matchesSearch;
     });
   }, [data, selectedState, searchQuery]);
 
   const sortedData = useMemo(() => {
+    if (!filteredData || !Array.isArray(filteredData)) return [];
     let sortableItems = [...filteredData];
     if (sortConfig !== null) {
       sortableItems.sort((a, b) => {
