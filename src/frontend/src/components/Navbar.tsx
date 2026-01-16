@@ -37,18 +37,6 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center">
-             {/* Search Bar - Hidden on small mobile, shown on larger mobile/desktop */}
-             <div className="relative hidden sm:block mr-4">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-             </div>
-
              {/* Mobile menu button */}
              <div className="md:hidden flex items-center">
                <button
@@ -97,19 +85,6 @@ export function Navbar() {
           <Store className="w-5 h-5 mr-3" />
           Vendors
         </Link>
-        {/* Mobile Search Input */}
-        <div className="pt-2 sm:hidden">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-            />
-          </div>
-        </div>
       </div>
     </nav>
   );
