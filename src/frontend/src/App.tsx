@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { MPList } from './pages/MPList';
 import { MPDetail } from './pages/MPDetail';
 import { VendorList } from './pages/VendorList';
 import { VendorDetail } from './pages/VendorDetail';
 import { Analytics } from './pages/Analytics';
-import { Info, CheckCircle, Eye, Wallet } from 'lucide-react';
+import { Info, CheckCircle, Eye, Wallet, Search, ShieldCheck, TrendingUp, Building2, HelpCircle } from 'lucide-react';
 
 const queryClient = new QueryClient()
 
@@ -48,9 +48,81 @@ function Dashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">National Overview</h1>
-        <p className="text-gray-600 mt-2">Analysis of Public Funds & Development Works</p>
+      {/* Hero / Welcome Section */}
+      <div className="bg-gradient-to-r from-blue-900 to-indigo-800 rounded-2xl p-8 mb-8 text-white shadow-xl">
+        <div className="max-w-3xl">
+          <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
+            Empowering Citizens through Data Transparency
+          </h1>
+          <p className="text-lg text-blue-100 mb-6 leading-relaxed">
+            GovWork is an independent analytics platform designed to make the Government of India's 
+            MPLADS (Member of Parliament Local Area Development Scheme) data accessible to everyone. 
+            We transform messy public records into clear insights, helping you track how public money 
+            is spent on local development.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Link to="/mps" className="bg-white text-blue-900 px-6 py-2 rounded-full font-bold hover:bg-blue-50 transition-colors">
+              Explore Rankings
+            </Link>
+            <Link to="/analytics" className="bg-blue-700 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-600 transition-colors border border-blue-500">
+              View Trends
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Platform Guide */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+          <HelpCircle className="w-6 h-6 mr-2 text-blue-600" />
+          How to use this platform
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-4">
+              <Search className="w-6 h-6 text-blue-600" />
+            </div>
+            <h3 className="font-bold text-gray-900 mb-2">Search MPs</h3>
+            <p className="text-sm text-gray-600">
+              Find your representative or search by constituency to see their specific funding records and project proposals.
+            </p>
+          </div>
+
+          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center mb-4">
+              <ShieldCheck className="w-6 h-6 text-green-600" />
+            </div>
+            <h3 className="font-bold text-gray-900 mb-2">Audit Works</h3>
+            <p className="text-sm text-gray-600">
+              Inspect project details and verify accountability by checking if actual proof of completion (PDFs/Images) has been uploaded.
+            </p>
+          </div>
+
+          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center mb-4">
+              <TrendingUp className="w-6 h-6 text-purple-600" />
+            </div>
+            <h3 className="font-bold text-gray-900 mb-2">Analyze Trends</h3>
+            <p className="text-sm text-gray-600">
+              Compare performance across states and track the monthly pace of development completion through our analytics engine.
+            </p>
+          </div>
+
+          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center mb-4">
+              <Building2 className="w-6 h-6 text-orange-600" />
+            </div>
+            <h3 className="font-bold text-gray-900 mb-2">Track Vendors</h3>
+            <p className="text-sm text-gray-600">
+              Discover which vendors are receiving the most public funds and analyze work concentration patterns across constituencies.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <header className="mb-8 border-t border-gray-100 pt-8">
+        <h2 className="text-3xl font-bold text-gray-900">National Overview</h2>
+        <p className="text-gray-600 mt-2">Aggregated statistics from the latest official records</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
