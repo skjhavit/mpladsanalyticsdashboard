@@ -1,0 +1,18 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+backend.log
+
+# Node
+node_modules/
+dist/
+.env.local
+
+# Database
+# Note: We ARE pushing the .db file as planned for the Render deployment
+# data/govwork.db  <-- (Uncommented so it stays IN the repo)
+
+# OS
+.DS_Store
