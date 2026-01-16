@@ -12,6 +12,7 @@ const queryClient = new QueryClient()
 
 // Determine API URL based on environment
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+console.log('Using API Base URL:', API_BASE_URL);
 
 function App() {
   return (

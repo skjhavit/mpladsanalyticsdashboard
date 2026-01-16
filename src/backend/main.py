@@ -7,8 +7,18 @@ from .database import get_db_connection
 from typing import List, Optional
 import pandas as pd
 import requests
+import logging
+import os
+import time
 
 app = FastAPI(title="GovWork API", description="MPLADS Data Analysis API")
+
+logger = logging.getLogger("govwork.request")
+if not logger.handlers:
+    logging.basicConfig(
+        level=os.getenv("LOG_LEVEL", "INFO").upper(),
+        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    )
 
 # Enable CORS for frontend
 app.add_middleware(
@@ -18,6 +28,59 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def _get_client_ip(request) -> str:
+    # Prefer proxy headers when behind Render/Cloudflare/etc.
+    xff = request.headers.get("x-forwarded-for")
+    if xff:
+        # Can be a comma-separated chain. The left-most is the original client.
+        return xff.split(",")[0].strip()
+    xri = request.headers.get("x-real-ip")
+    if xri:
+        return xri.strip()
+    if request.client and request.client.host:
+        return request.client.host
+    return "unknown"
+
+
+@app.middleware("http")
+async def log_requests(request, call_next):
+    if os.getenv("GOVWORK_REQUEST_LOGGING", "1") != "1":
+        return await call_next(request)
+
+    start = time.perf_counter()
+    client_ip = _get_client_ip(request)
+    user_agent = request.headers.get("user-agent", "-")
+    referer = request.headers.get("referer", "-")
+
+    try:
+        response = await call_next(request)
+    except Exception:
+        duration_ms = (time.perf_counter() - start) * 1000
+        logger.exception(
+            "request_failed ip=%s method=%s path=%s duration_ms=%.1f ua=%r referer=%r",
+            client_ip,
+            request.method,
+            request.url.path,
+            duration_ms,
+            user_agent,
+            referer,
+        )
+        raise
+
+    duration_ms = (time.perf_counter() - start) * 1000
+    logger.info(
+        "request ip=%s method=%s path=%s status=%s duration_ms=%.1f ua=%r referer=%r",
+        client_ip,
+        request.method,
+        request.url.path,
+        response.status_code,
+        duration_ms,
+        user_agent,
+        referer,
+    )
+    return response
 
 @app.get("/")
 def read_root():
