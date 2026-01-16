@@ -11,6 +11,7 @@ export function MPList() {
 
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [selectedState, setSelectedState] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const uniqueStates = useMemo(() => {
     if (!data) return [];
@@ -20,8 +21,14 @@ export function MPList() {
 
   const filteredData = useMemo(() => {
     if (!data) return [];
-    return data.filter((mp: any) => selectedState === 'All' || mp.state === selectedState);
-  }, [data, selectedState]);
+    return data.filter((mp: any) => {
+      const matchesState = selectedState === 'All' || mp.state === selectedState;
+      const matchesSearch = 
+        mp.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        mp.constituency.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesState && matchesSearch;
+    });
+  }, [data, selectedState, searchQuery]);
 
   const sortedData = useMemo(() => {
     let sortableItems = [...filteredData];
@@ -62,17 +69,34 @@ export function MPList() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="text-2xl font-bold text-gray-900">Member of Parliament Performance</h1>
         
-        <div className="flex items-center bg-white p-1 rounded-lg border border-gray-200 shadow-sm w-full sm:w-auto">
-            <Filter className="w-4 h-4 text-gray-500 ml-2" />
-            <select 
-                className="block w-full sm:w-48 pl-2 pr-8 py-2 text-sm border-none focus:ring-0 rounded-md"
-                value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value)}
-            >
-                {uniqueStates.map((state: any) => (
-                    <option key={state} value={state}>{state}</option>
-                ))}
-            </select>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            {/* Local Search */}
+            <div className="relative flex-grow sm:flex-grow-0">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-4 w-4 text-gray-400" />
+                </div>
+                <input
+                    type="text"
+                    placeholder="Search MP or Constituency..."
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
+
+            {/* State Filter */}
+            <div className="flex items-center bg-white p-1 rounded-lg border border-gray-200 shadow-sm">
+                <Filter className="w-4 h-4 text-gray-500 ml-2" />
+                <select 
+                    className="block w-full sm:w-48 pl-2 pr-8 py-2 text-sm border-none focus:ring-0 rounded-md"
+                    value={selectedState}
+                    onChange={(e) => setSelectedState(e.target.value)}
+                >
+                    {uniqueStates.map((state: any) => (
+                        <option key={state} value={state}>{state}</option>
+                    ))}
+                </select>
+            </div>
         </div>
       </div>
       
