@@ -4,6 +4,7 @@ import { ExternalLink, CheckCircle2, Clock } from 'lucide-react';
 
 export function MPDetail() {
   const { name } = useParams();
+  const API_BASE_URL = import.meta.env.VITE_API_URL || '';
   const { isPending, error, data } = useQuery({
     queryKey: ['mp', name],
     queryFn: () => fetch((import.meta.env.VITE_API_URL || '') + `/api/mps/${encodeURIComponent(name || '')}`).then((res) => res.json()),
@@ -100,7 +101,7 @@ export function MPDetail() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
                     {work.attach_id ? (
                       <a 
-                        href={`/api/proxy/proof/${work.attach_id}`} 
+                        href={`${API_BASE_URL}/api/proxy/proof/${work.attach_id}`} 
                         target="_blank" 
                         rel="noreferrer"
                         className="flex items-center hover:underline"
