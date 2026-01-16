@@ -3,7 +3,12 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
-from .database import get_db_connection
+try:
+    # When imported as a package module (e.g., uvicorn src.backend.main:app)
+    from .database import get_db_connection
+except ImportError:
+    # When imported as a plain module (e.g., uvicorn main:app)
+    from database import get_db_connection
 from typing import List, Optional
 import pandas as pd
 import requests
