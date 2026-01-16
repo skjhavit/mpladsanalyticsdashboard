@@ -21,11 +21,12 @@ export function MPList() {
 
   const filteredData = useMemo(() => {
     if (!data) return [];
+    const query = searchQuery.toLowerCase();
     return data.filter((mp: any) => {
       const matchesState = selectedState === 'All' || mp.state === selectedState;
-      const matchesSearch = 
-        mp.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        mp.constituency.toLowerCase().includes(searchQuery.toLowerCase());
+      const name = mp.name ? mp.name.toLowerCase() : '';
+      const constituency = mp.constituency ? mp.constituency.toLowerCase() : '';
+      const matchesSearch = name.includes(query) || constituency.includes(query);
       return matchesState && matchesSearch;
     });
   }, [data, selectedState, searchQuery]);
