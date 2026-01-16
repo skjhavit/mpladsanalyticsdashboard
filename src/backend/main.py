@@ -187,6 +187,7 @@ def create_suggestion(payload: SuggestionIn, request: Request):
 
 def _is_admin_request(request: Request) -> bool:
     token = os.getenv("GOVWORK_ADMIN_TOKEN")
+    logger.info("Admin Token is set: %s", "yes" if token else "no")
     presented = request.headers.get("x-admin-token")
     if token:
         return presented == token
